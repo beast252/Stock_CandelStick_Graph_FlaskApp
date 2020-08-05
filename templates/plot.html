@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block content %}
+<link rel="StyleSheet" href= {{ cdn_css | safe }} type="text/css"/>
+<script type="text/javascript" src={{ cdn_js | safe }}></script>
+
+<div class="about">
+    <h1>My About Page</h1>
+    <p>Test Website</p>
+</div>
+{{ script | safe }}
+{{ div | safe }}
+{% endblock %}
