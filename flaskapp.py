@@ -4,7 +4,8 @@ app=Flask(__name__)
 @app.route('/plot' ,methods=["POST"])
 def plot():
     try:
-        ticker=request.form["Ticker"]
+        ticker1=request.form["Ticker"]
+        ticker=ticker1.upper()
         startDate=request.form["startDate"]
         y1,m1,d1=map(int,startDate.split('/'))
         endDate=request.form["endDate"]
