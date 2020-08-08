@@ -1,7 +1,24 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="home">
-    <h1>My homepage</h1>
-    <p>This is a Model website</p>
+    <h1>Homepage</h1>
+    <p>Search for any stock and analyse it's performance using CandelStick Graph</p>
 </div>
+
+<div class="container">
+    <form class="form-sigin" method="post" action="/plot">
+        <h2 class="form-signin-heading" style="border-color: black; color: mediumslateblue;">Stock Market Data In CandelStick Graph</h2>
+        <div class="form-group center">
+            <label for="inputTicker" class="sr=only">Yahoo Finance Stock Ticker</label>
+            <input type="text" id="inputTicker" name="Ticker" class="form-control" placeholder="GOOG, AAPL, FB..." required autofocus>
+            <label for="inputStartDate" class="sr=only">Start Date</label>
+            <input type="text" id="inputStartDate" name="startDate" class="form-control" placeholder="YYYY/MM/DD" required autofocus>
+            <label for="inputEndDate" class="sr=only">End Date</label>
+            <input type="text" id="inputEndDate" name="endDate" class="form-control" placeholder="YYYY/MM/DD" required autofocus>
+            <button class="btn btn-lg btn-primary btn-block but but1" type="submit">Search</button>
+        </div>
+    </form>
+
+</div>
+
 {% endblock %}

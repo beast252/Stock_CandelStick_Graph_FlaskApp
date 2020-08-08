@@ -1,48 +1,58 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 app=Flask(__name__)
 
-@app.route('/plot/')
+@app.route('/plot' ,methods=["POST"])
 def plot():
-    import pandas_datareader.data as web
-    import datetime
-    import os
-    from bokeh.embed import components
-    from bokeh.resources import CDN
-    from bokeh.plotting import figure, show, output_file
-    stock=['GOOG']
-    start=datetime.datetime(2015,12,1)
-    end=datetime.datetime(2016,1,10)
-    df=web.DataReader("AAPL", 'quandl', start, end,access_key="fThxv6nZJQtMH6GWwATb")
+    try:
+        ticker=request.form["Ticker"]
+        startDate=request.form["startDate"]
+        y1,m1,d1=map(int,startDate.split('/'))
+        endDate=request.form["endDate"]
+        y2,m2,d2=map(int,endDate.split('/'))
+        print(ticker,startDate,endDate)
+        import pandas_datareader.data as web
+        import datetime
+        import os
+        from bokeh.embed import components
+        from bokeh.resources import CDN
+        from bokeh.plotting import figure, show, output_file
 
-    def inc_dec(c,o):
-        if c>o:
-            value="Increase"
-        elif c<o:
-            value="Decrease"
-        else:
-            value="Equal"
-        return value
+        start=datetime.datetime(y1,m1,d1)
+        end=datetime.datetime(y2,m2,d2)
+        print(ticker,start,end)
+        df=web.DataReader(ticker, 'quandl', start, end, access_key="J37khzc4k5mfrw8rMpxa")
 
-    df["Status"]=[inc_dec(c,o) for c, o in zip(df.Close,df.Open)]
-    df["Middle"]=(df.Open+df.Close)/2
-    df["Height"]=abs(df.Close-df.Open)
+        def inc_dec(c,o):
+            if c>o:
+                value="Increase"
+            elif c<o:
+                value="Decrease"
+            else:
+                value="Equal"
+            return value
 
-    p=figure(x_axis_type='datetime',width=1000,height=400)
-    p.title.text="CandelStick Chart"
-    #p.grid.grid_line_alpha=0.3
-    hours_12=12*60*60*1000
-    p.segment(df.index,df.High,df.index,df.Low,color="Black")
+        df["Status"]=[inc_dec(c,o) for c, o in zip(df.Close,df.Open)]
+        df["Middle"]=(df.Open+df.Close)/2
+        df["Height"]=abs(df.Close-df.Open)
 
-    p.rect(df.index[df.Status=="Increase"],df.Middle[df.Status=="Increase"],hours_12,df.Height[df.Status=="Increase"],
-        fill_color="#CCFFFF",line_color="Black")
-    p.rect(df.index[df.Status=="Decrease"],df.Middle[df.Status=="Decrease"],hours_12,df.Height[df.Status=="Decrease"],
-        fill_color="#FF3333",line_color="Black")
+        p=figure(x_axis_type='datetime',width=1000,height=400)
+        p.title.text="CandelStick Chart"
+        #p.grid.grid_line_alpha=0.3
+        hours_12=12*60*60*1000
+        p.segment(df.index,df.High,df.index,df.Low,color="Black")
 
-    script,div=components(p)
-    cdn_js=CDN.js_files[0]
-    cdn_css=CDN.js_files[0]
+        p.rect(df.index[df.Status=="Increase"],df.Middle[df.Status=="Increase"],hours_12,df.Height[df.Status=="Increase"],
+            fill_color="#CCFFFF",line_color="Black")
+        p.rect(df.index[df.Status=="Decrease"],df.Middle[df.Status=="Decrease"],hours_12,df.Height[df.Status=="Decrease"],
+            fill_color="#FF3333",line_color="Black")
 
-    return render_template("plot.html",script=script,div=div,cdn_js=cdn_js,cdn_css=cdn_css)
+        script,div=components(p)
+        cdn_js=CDN.js_files[0]
+        cdn_css=CDN.js_files[0]
+
+        return render_template("plot.html",script=script,div=div,cdn_js=cdn_js,cdn_css=cdn_css)
+    except:
+        return render_template("error.html")
 
 @app.route('/')
 def home():
